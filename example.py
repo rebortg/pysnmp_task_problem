@@ -53,8 +53,9 @@ class SNMPClient:
         return ObjectType(ObjectIdentity(oid))
 
     def bulkwalk(self, oid):
+        engine = SnmpEngine()
         iterator = bulkWalkCmd(
-                SnmpEngine(),
+                engine,
                 self.security_parameters,
                 UdpTransportTarget((self.host, self.port)),
                 ContextData(),
@@ -79,11 +80,16 @@ class SNMPClient:
             except StopIteration:
                 break
 
+        engine.transportDispatcher.closeDispatcher()
+
         return data
+
     
 
 host1 = SNMPClient('demo.pysnmp.com', version=2, community='public')
 host1.bulkwalk(ObjectIdentity('1.3.6.1.2.1.2.2'))
 
+
 host2 = SNMPClient('demo.pysnmp.com', version=2, community='public')
 host2.bulkwalk(ObjectIdentity('1.3.6.1.2.1.2.2'))
+
